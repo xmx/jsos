@@ -9,41 +9,9 @@ import (
 )
 
 func New(mods ...ModuleRegister) (Engineer, error) {
-	prog, err := onceCompileBabel()
-	if err != nil {
-		return nil, err
-	}
-
 	vm := goja.New()
 	vm.SetFieldNameMapper(newFieldNameMapper("json"))
-	// babel need
-	logFunc := func(goja.FunctionCall) goja.Value { return nil }
-	_ = vm.Set("console", map[string]func(goja.FunctionCall) goja.Value{
-		"log":   logFunc,
-		"error": logFunc,
-		"warn":  logFunc,
-	})
-
-	if _, err = vm.RunProgram(prog); err != nil {
-		return nil, err
-	}
-	var transformFunc goja.Callable
-	babel := vm.Get("Babel")
-	if err = vm.ExportTo(babel.ToObject(vm).Get("transform"), &transformFunc); err != nil {
-		return nil, err
-	}
-
-	transform := func(code string, opts map[string]any) (string, error) {
-		if value, exx := transformFunc(babel, vm.ToValue(code), vm.ToValue(opts)); exx != nil {
-			return "", exx
-		} else {
-			return value.ToObject(vm).Get("code").String(), nil
-		}
-	}
-	eng := &jsEngine{
-		vm:        vm,
-		transform: transform,
-	}
+	eng := &jsEngine{vm: vm}
 	rqu := &require{
 		eng:     eng,
 		modules: make(map[string]goja.Value, 16),
@@ -52,7 +20,7 @@ func New(mods ...ModuleRegister) (Engineer, error) {
 	eng.require = rqu
 	_ = vm.Set("require", rqu.require)
 
-	if err = RegisterModules(eng, mods); err != nil {
+	if err := RegisterModules(eng, mods); err != nil {
 		return nil, err
 	}
 
@@ -60,14 +28,10 @@ func New(mods ...ModuleRegister) (Engineer, error) {
 }
 
 type jsEngine struct {
-	vm *goja.Runtime
-	// transform Babel.transform()
-	transform func(code string, opts map[string]any) (string, error)
-
+	vm      *goja.Runtime
 	require *require
-
-	mutex  sync.Mutex
-	finals []func() error
+	mutex   sync.Mutex
+	finals  []func() error
 }
 
 func (jse *jsEngine) Runtime() *goja.Runtime {
@@ -75,12 +39,12 @@ func (jse *jsEngine) Runtime() *goja.Runtime {
 }
 
 func (jse *jsEngine) RunString(code string) (goja.Value, error) {
-	commonJS, err := jse.transform(code, map[string]any{"plugins": []string{"transform-modules-commonjs"}})
+	cjs, err := Transform(code, map[string]any{"plugins": []string{"transform-modules-commonjs"}})
 	if err != nil {
 		return nil, err
 	}
 
-	return jse.vm.RunString(commonJS)
+	return jse.vm.RunString(cjs)
 }
 
 func (jse *jsEngine) RunProgram(pgm *goja.Program) (goja.Value, error) {
