@@ -8,7 +8,7 @@ import (
 	"github.com/xmx/jsos/jzip"
 )
 
-func New(mods []ModuleRegister) (Engineer, error) {
+func New(mods ...ModuleRegister) (Engineer, error) {
 	prog, err := onceCompileBabel()
 	if err != nil {
 		return nil, err
@@ -126,7 +126,9 @@ func (jse *jsEngine) RunJZip(filename string) (goja.Value, error) {
 	}
 	app := jz.Manifest.Application
 	mainPath := app.Main
-
+	if mainPath != "" {
+		mainPath = "main"
+	}
 	mainFile, err := jz.Open(mainPath + ".js")
 	if err != nil {
 		return nil, err
