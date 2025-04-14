@@ -1,0 +1,8 @@
+{
+  "application": {
+    "id": "github.com/xmx/demo",
+    "name": "我的程序",
+    "version": "0.0.1",
+    "main": "main"
+  }
+}
