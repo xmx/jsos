@@ -1,17 +1,18 @@
+import * as io from "io";
+import * as os from "os";
 import * as http from "http";
 
-const mux = http.newServeMux();
-mux.handleFunc("/ping", (w, r) => {
-    console.log(r.remoteAddr)
-    w.header().set("Content-Type", "application/json")
-    w.writeHeader(http.statusAccepted)
+const cli = new http.Client()
+const resp = cli.get("https://baidu.com")
+console.log(resp.statusCode)
 
-    const data = {
-        name: "PING",
-        date: new Date(),
+let out;
+try {
+    out = os.create("out.html", 0o755)
+    const n = io.copy(out, resp.body)
+    console.log(">>>> ", n)
+} finally {
+    if (out) {
+        out.close()
     }
-
-    w.write(JSON.stringify(data))
-})
-
-http.listenAndServe(":9099", mux)
+}

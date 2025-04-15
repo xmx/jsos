@@ -33,6 +33,9 @@ func (std *stdOS) RegisterModule(eng jsvm.Engineer) error {
 		"getpagesize":  os.Getpagesize,
 		"getppid":      os.Getppid,
 		"getwd":        os.Getwd,
+		"stdout":       os.Stdout,
+		"stderr":       os.Stderr,
+		"create":       os.Create,
 	}
 	eng.RegisterModule("os", vals, true)
 

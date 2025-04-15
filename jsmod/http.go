@@ -3,6 +3,8 @@ package jsmod
 import (
 	"net/http"
 
+	"github.com/dop251/goja"
+
 	"github.com/xmx/jsos/jsvm"
 )
 
@@ -84,8 +86,10 @@ func (sh *stdHTTP) RegisterModule(eng jsvm.Engineer) error {
 		"statusNotExtended":                   http.StatusNotExtended,
 		"statusNetworkAuthenticationRequired": http.StatusNetworkAuthenticationRequired,
 
-		"newServeMux":    http.NewServeMux,
-		"listenAndServe": sh.listenAndServe,
+		"newServeMux":        http.NewServeMux,
+		"listenAndServe":     sh.listenAndServe,
+		"canonicalHeaderKey": http.CanonicalHeaderKey,
+		"Client":             sh.newClient,
 	}
 	eng.RegisterModule("http", vals, true)
 
@@ -96,4 +100,9 @@ func (sh *stdHTTP) listenAndServe(addr string, handler http.Handler) error {
 	srv := &http.Server{Addr: addr, Handler: handler}
 	sh.eng.AddFinalizer(srv.Close)
 	return srv.ListenAndServe()
+}
+
+func (sh *stdHTTP) newClient(_ goja.ConstructorCall, vm *goja.Runtime) *goja.Object {
+	cli := &http.Client{}
+	return vm.ToValue(cli).(*goja.Object)
 }
