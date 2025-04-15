@@ -42,6 +42,7 @@ func (*stdTime) RegisterModule(eng jsvm.Engineer) error {
 		"sleep":         time.Sleep,
 		"local":         time.Local,
 		"parseDuration": time.ParseDuration,
+		"afterFunc":     time.AfterFunc,
 	}
 	eng.RegisterModule("time", vals, true)
 

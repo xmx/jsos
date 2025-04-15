@@ -27,8 +27,8 @@ func (wc *writerConsole) RegisterModule(vm jsvm.Engineer) error {
 	wc.vm = vm
 	fields := map[string]any{
 		"log":   wc.write,
-		"error": wc.writeToStdout,
-		"warn":  wc.write,
+		"error": wc.writeStderr,
+		"warn":  wc.writeStderr,
 		"info":  wc.write,
 		"debug": wc.write,
 	}
@@ -47,7 +47,7 @@ func (wc *writerConsole) write(call goja.FunctionCall) goja.Value {
 	return goja.Undefined()
 }
 
-func (wc *writerConsole) writeToStdout(call goja.FunctionCall) goja.Value {
+func (wc *writerConsole) writeStderr(call goja.FunctionCall) goja.Value {
 	msg, err := wc.format(call)
 	if err == nil {
 		_, err = wc.stderr.Write(msg)

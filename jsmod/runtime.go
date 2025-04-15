@@ -14,10 +14,14 @@ type stdRuntime struct{}
 
 func (s *stdRuntime) RegisterModule(eng jsvm.Engineer) error {
 	vals := map[string]any{
-		"memStats": s.memStats,
-		"goos":     runtime.GOOS,
-		"goarch":   runtime.GOARCH,
-		"gc":       runtime.GC,
+		"memStats":     s.memStats,
+		"goos":         runtime.GOOS,
+		"goarch":       runtime.GOARCH,
+		"gc":           runtime.GC,
+		"numCPU":       runtime.NumCPU,
+		"numGoroutine": runtime.NumGoroutine,
+		"numCgoCall":   runtime.NumCgoCall,
+		"version":      runtime.Version,
 	}
 	eng.RegisterModule("runtime", vals, true)
 
