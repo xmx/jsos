@@ -10,11 +10,11 @@ import (
 // this is done using esbuild
 func Transform(src, filename string) (code string, srcMap []byte, err error) {
 	opts := api.TransformOptions{
-		Loader:         api.LoaderTS,
+		Loader:         api.LoaderJS,
 		Sourcefile:     filename,
 		Target:         api.ESNext,
 		Format:         api.FormatCommonJS,
-		Sourcemap:      api.SourceMapExternal,
+		Sourcemap:      api.SourceMapNone,
 		SourcesContent: api.SourcesContentInclude,
 		LegalComments:  api.LegalCommentsNone,
 		Platform:       api.PlatformNeutral,
