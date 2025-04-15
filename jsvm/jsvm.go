@@ -39,12 +39,12 @@ func (jse *jsEngine) Runtime() *goja.Runtime {
 }
 
 func (jse *jsEngine) RunScript(name, code string) (goja.Value, error) {
-	cjs, _, err := Transform(code, name)
+	cjs, err := Transform(name, code)
 	if err != nil {
 		return nil, err
 	}
 
-	return jse.vm.RunScript(name, cjs)
+	return jse.vm.RunScript(name, string(cjs))
 }
 
 func (jse *jsEngine) RunProgram(pgm *goja.Program) (goja.Value, error) {
