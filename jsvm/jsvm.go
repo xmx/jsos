@@ -90,7 +90,7 @@ func (jse *jsEngine) RunJZip(filename string) (goja.Value, error) {
 	}
 	app := jz.Manifest.Application
 	mainName := app.Main
-	if mainName != "" {
+	if mainName == "" {
 		mainName = "main"
 	}
 
