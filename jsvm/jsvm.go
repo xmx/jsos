@@ -89,13 +89,13 @@ func (jse *jsEngine) RunJZip(filename string) (goja.Value, error) {
 		return nil, err
 	}
 	app := jz.Manifest.Application
-	mainPath := app.Main
-	if mainPath != "" {
-		mainPath = "main"
+	mainName := app.Main
+	if mainName != "" {
+		mainName = "main"
 	}
 
-	name := mainPath + ".js"
-	mainFile, err := jz.Open(mainPath + ".js")
+	mainPath := mainName + ".js"
+	mainFile, err := jz.Open(mainPath)
 	if err != nil {
 		return nil, err
 	}
@@ -107,5 +107,5 @@ func (jse *jsEngine) RunJZip(filename string) (goja.Value, error) {
 	}
 	jse.require.source = jz
 
-	return jse.RunScript(name, string(data))
+	return jse.RunScript(mainPath, string(data))
 }

@@ -60,7 +60,7 @@ func (rqu *require) loadApplication(name string) (goja.Value, bool, error) {
 	}
 
 	filename := name + ".js"
-	file, err := rqu.source.Open(name + ".js")
+	file, err := rqu.source.Open(filename)
 	if err != nil {
 		return nil, false, err
 	}
