@@ -38,13 +38,13 @@ func (jse *jsEngine) Runtime() *goja.Runtime {
 	return jse.vm
 }
 
-func (jse *jsEngine) RunString(code string) (goja.Value, error) {
-	cjs, err := Transform(code, map[string]any{"plugins": []string{"transform-modules-commonjs"}})
+func (jse *jsEngine) RunScript(name, code string) (goja.Value, error) {
+	cjs, _, err := Transform(code, name)
 	if err != nil {
 		return nil, err
 	}
 
-	return jse.vm.RunString(cjs)
+	return jse.vm.RunScript(name, cjs)
 }
 
 func (jse *jsEngine) RunProgram(pgm *goja.Program) (goja.Value, error) {
@@ -93,6 +93,8 @@ func (jse *jsEngine) RunJZip(filename string) (goja.Value, error) {
 	if mainPath != "" {
 		mainPath = "main"
 	}
+
+	name := mainPath + ".js"
 	mainFile, err := jz.Open(mainPath + ".js")
 	if err != nil {
 		return nil, err
@@ -105,5 +107,5 @@ func (jse *jsEngine) RunJZip(filename string) (goja.Value, error) {
 	}
 	jse.require.source = jz
 
-	return jse.RunString(string(data))
+	return jse.RunScript(name, string(data))
 }

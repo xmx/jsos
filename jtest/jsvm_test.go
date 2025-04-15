@@ -17,7 +17,9 @@ func TestJZip(t *testing.T) {
 		jsmod.NewOS(),
 		jsmod.NewRuntime(),
 		jsmod.NewTime(),
+		jsmod.NewHTTP(),
 	}
+
 	eng, err := jsvm.New(mods...)
 	if err != nil {
 		t.Fatal(err)

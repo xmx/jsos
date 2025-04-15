@@ -5,7 +5,7 @@ import "github.com/dop251/goja"
 type Engineer interface {
 	Runtime() *goja.Runtime
 	RunJZip(filepath string) (goja.Value, error)
-	RunString(code string) (goja.Value, error)
+	RunScript(name, code string) (goja.Value, error)
 	RunProgram(pgm *goja.Program) (goja.Value, error)
 	RegisterModule(name string, module any, override bool) bool
 	AddFinalizer(finals ...func() error)

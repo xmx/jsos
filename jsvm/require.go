@@ -58,6 +58,8 @@ func (rqu *require) loadApplication(name string) (goja.Value, bool, error) {
 	if val, exists := rqu.sources[name]; exists {
 		return val, true, nil
 	}
+
+	filename := name + ".js"
 	file, err := rqu.source.Open(name + ".js")
 	if err != nil {
 		return nil, false, err
@@ -69,11 +71,12 @@ func (rqu *require) loadApplication(name string) (goja.Value, bool, error) {
 	}
 
 	vm := rqu.eng.vm
-	exports := vm.NewObject()
-	_ = vm.Set("exports", exports)
-	if _, err = rqu.eng.RunString(string(code)); err != nil {
+	module := vm.NewObject()
+	_ = vm.Set("module", module)
+	if _, err = rqu.eng.RunScript(filename, string(code)); err != nil {
 		return nil, false, err
 	}
+	exports := module.Get("exports").ToObject(vm)
 	rqu.sources[name] = exports
 
 	return exports, true, nil
