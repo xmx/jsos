@@ -86,7 +86,7 @@ func (sh *stdHTTP) RegisterModule(eng jsvm.Engineer) error {
 		"statusNotExtended":                   http.StatusNotExtended,
 		"statusNetworkAuthenticationRequired": http.StatusNetworkAuthenticationRequired,
 
-		"newServeMux":        http.NewServeMux,
+		"ServeMux":           sh.newServeMux,
 		"listenAndServe":     sh.listenAndServe,
 		"canonicalHeaderKey": http.CanonicalHeaderKey,
 		"Client":             sh.newClient,
@@ -107,7 +107,12 @@ func (sh *stdHTTP) listenAndServe(addr string, handler http.Handler) error {
 	return err
 }
 
-func (sh *stdHTTP) newClient(_ goja.ConstructorCall, vm *goja.Runtime) *goja.Object {
+func (*stdHTTP) newClient(_ goja.ConstructorCall, vm *goja.Runtime) *goja.Object {
 	cli := &http.Client{}
 	return vm.ToValue(cli).(*goja.Object)
+}
+
+func (*stdHTTP) newServeMux(_ goja.ConstructorCall, vm *goja.Runtime) *goja.Object {
+	mux := http.NewServeMux()
+	return vm.ToValue(mux).(*goja.Object)
 }
