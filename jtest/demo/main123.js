@@ -1,4 +1,4 @@
-import * as os from "os";
+import * as os from "os1";
 import * as math from "util/math";
 
 console.log("进程 PID：", os.getpid());

@@ -3,6 +3,7 @@ package jsvm
 import (
 	"fmt"
 	"io"
+	"os"
 
 	"github.com/dop251/goja"
 	"github.com/xmx/jsos/jzip"
@@ -40,11 +41,11 @@ func (rqu *require) require(call goja.FunctionCall) goja.Value {
 
 	var err error
 	if val, exists, err = rqu.loadApplication(name); err == nil && exists {
-		panic(rqu.eng.vm.NewGoError(err))
+		return val
 	}
 
 	vm := rqu.eng.Runtime()
-	if err != nil {
+	if !os.IsNotExist(err) {
 		panic(vm.NewGoError(err))
 	}
 

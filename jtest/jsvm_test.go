@@ -26,7 +26,7 @@ func TestJZip(t *testing.T) {
 	}
 	defer eng.Kill("结束")
 
-	_, err = eng.RunJZip("demo/demo.zip")
+	_, err = eng.RunJZip("demo/main.zip")
 	t.Log(err)
 }
 
