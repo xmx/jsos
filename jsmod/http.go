@@ -1,6 +1,7 @@
 package jsmod
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/dop251/goja"
@@ -99,7 +100,12 @@ func (sh *stdHTTP) RegisterModule(eng jsvm.Engineer) error {
 func (sh *stdHTTP) listenAndServe(addr string, handler http.Handler) error {
 	srv := &http.Server{Addr: addr, Handler: handler}
 	sh.eng.AddFinalizer(srv.Close)
-	return srv.ListenAndServe()
+	err := srv.ListenAndServe()
+	if err == nil || errors.Is(err, http.ErrServerClosed) {
+		return nil
+	}
+
+	return err
 }
 
 func (sh *stdHTTP) newClient(_ goja.ConstructorCall, vm *goja.Runtime) *goja.Object {
