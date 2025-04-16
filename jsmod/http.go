@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/dop251/goja"
-
 	"github.com/xmx/jsos/jsvm"
 )
 
