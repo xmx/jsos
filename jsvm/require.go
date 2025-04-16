@@ -33,17 +33,23 @@ func (rqu *require) kill() {
 
 func (rqu *require) require(call goja.FunctionCall) goja.Value {
 	name := call.Argument(0).String()
-	if val, exists := rqu.loadBootstrap(name); exists {
-		return val
-	}
-	if val, exists, err := rqu.loadApplication(name); err != nil {
-		panic(rqu.eng.vm.NewGoError(err))
-	} else if exists {
+	val, exists := rqu.loadBootstrap(name)
+	if exists {
 		return val
 	}
 
+	var err error
+	if val, exists, err = rqu.loadApplication(name); err == nil && exists {
+		panic(rqu.eng.vm.NewGoError(err))
+	}
+
+	vm := rqu.eng.Runtime()
+	if err != nil {
+		panic(vm.NewGoError(err))
+	}
+
 	msg := fmt.Sprintf("cannot find module '%s'", name)
-	panic(rqu.eng.vm.NewTypeError(msg))
+	panic(vm.NewTypeError(msg))
 }
 
 func (rqu *require) loadBootstrap(name string) (goja.Value, bool) {
@@ -70,7 +76,7 @@ func (rqu *require) loadApplication(name string) (goja.Value, bool, error) {
 		return nil, false, err
 	}
 
-	vm := rqu.eng.vm
+	vm := rqu.eng.Runtime()
 	module := vm.NewObject()
 	_ = vm.Set("module", module)
 	if _, err = rqu.eng.RunScript(filename, string(code)); err != nil {
