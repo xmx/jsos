@@ -118,7 +118,7 @@ func (*writerConsole) reflectParse(buf *bytes.Buffer, v any) error {
 		buf.WriteString(strconv.FormatBool(vof.Bool()))
 	default:
 		tmp := new(bytes.Buffer)
-		if err := json.NewEncoder(tmp).Encode(v); err == nil && tmp.Len() == 0 {
+		if err := json.NewEncoder(tmp).Encode(v); err == nil && tmp.Len() != 0 {
 			_, _ = buf.ReadFrom(tmp)
 			return nil
 		}

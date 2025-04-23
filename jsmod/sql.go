@@ -78,7 +78,11 @@ func (sc *stdDBConn) query(strSQL string, args ...any) (any, error) {
 	ret := make([]map[string]any, 0, 10)
 	for rows.Next() {
 		lines := make([]any, size)
-		if err = rows.Scan(lines...); err != nil {
+		ptrs := make([]any, size)
+		for i := range lines {
+			ptrs[i] = &lines[i]
+		}
+		if err = rows.Scan(ptrs...); err != nil {
 			return nil, err
 		}
 		row := make(map[string]any)
