@@ -1,16 +1,13 @@
 package jsvm
 
 import (
-	"io"
-
 	"github.com/dop251/goja"
+	"github.com/xmx/jsos/multio"
 )
 
 type Device interface {
-	Stdout() io.Writer
-	Stderr() io.Writer
-	SetStdout(io.Writer)
-	SetStderr(io.Writer)
+	Stdout() multio.Writer
+	Stderr() multio.Writer
 }
 
 type Engineer interface {
