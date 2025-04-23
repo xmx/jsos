@@ -6,14 +6,18 @@ import (
 
 	"github.com/dop251/goja"
 	"github.com/xmx/jsos/jzip"
+	"github.com/xmx/jsos/multio"
 )
 
 func New(mods ...ModuleRegister) (Engineer, error) {
 	vm := goja.New()
 	vm.SetFieldNameMapper(newFieldNameMapper("json"))
 	eng := &jsEngine{
-		vm:     vm,
-		device: new(jsDevice),
+		vm: vm,
+		device: &jsDevice{
+			stdout: multio.New(),
+			stderr: multio.New(),
+		},
 	}
 	rqu := &require{
 		eng:     eng,
@@ -31,32 +35,16 @@ func New(mods ...ModuleRegister) (Engineer, error) {
 }
 
 type jsDevice struct {
-	stdout io.Writer
-	stderr io.Writer
+	stdout multio.Writer
+	stderr multio.Writer
 }
 
-func (jd *jsDevice) Stdout() io.Writer {
-	if w := jd.stdout; w != nil {
-		return w
-	}
-
-	return io.Discard
+func (jd *jsDevice) Stdout() multio.Writer {
+	return jd.stdout
 }
 
-func (jd *jsDevice) Stderr() io.Writer {
-	if w := jd.stderr; w != nil {
-		return w
-	}
-
-	return io.Discard
-}
-
-func (jd *jsDevice) SetStdout(w io.Writer) {
-	jd.stdout = w
-}
-
-func (jd *jsDevice) SetStderr(w io.Writer) {
-	jd.stderr = w
+func (jd *jsDevice) Stderr() multio.Writer {
+	return jd.stderr
 }
 
 type jsEngine struct {
