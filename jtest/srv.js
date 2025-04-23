@@ -1,4 +1,4 @@
-import * as io from "io2";
+import * as io from "std/io";
 import * as os from "os";
 import * as http from "http";
 

@@ -44,7 +44,7 @@ func (jse *jsEngine) RunScript(name, code string) (goja.Value, error) {
 		return nil, err
 	}
 
-	return jse.vm.RunScript(name, string(cjs))
+	return jse.vm.RunScript(name, cjs)
 }
 
 func (jse *jsEngine) RunProgram(pgm *goja.Program) (goja.Value, error) {
@@ -99,6 +99,7 @@ func (jse *jsEngine) RunJZip(filename string) (goja.Value, error) {
 	if err != nil {
 		return nil, err
 	}
+	//goland:noinspection GoUnhandledErrorResult
 	defer mainFile.Close()
 
 	data, err := io.ReadAll(mainFile)

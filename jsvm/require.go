@@ -1,7 +1,6 @@
 package jsvm
 
 import (
-	"fmt"
 	"io"
 	"os"
 
@@ -34,14 +33,16 @@ func (rqu *require) kill() {
 
 func (rqu *require) require(call goja.FunctionCall) goja.Value {
 	name := call.Argument(0).String()
-	val, exists := rqu.loadBootstrap(name)
-	if exists {
-		return val
-	}
-
 	var err error
-	if val, exists, err = rqu.loadApplication(name); err == nil && exists {
-		return val
+	if name != "" {
+		val, exists := rqu.loadBootstrap(name)
+		if exists {
+			return val
+		}
+
+		if val, exists, err = rqu.loadApplication(name); err == nil && exists {
+			return val
+		}
 	}
 
 	vm := rqu.eng.Runtime()
@@ -49,8 +50,7 @@ func (rqu *require) require(call goja.FunctionCall) goja.Value {
 		panic(vm.NewGoError(err))
 	}
 
-	msg := fmt.Sprintf("cannot find module '%s'", name)
-	panic(vm.NewTypeError(msg))
+	panic(vm.NewTypeError("cannot find module '%s'", name))
 }
 
 func (rqu *require) loadBootstrap(name string) (goja.Value, bool) {
@@ -71,7 +71,9 @@ func (rqu *require) loadApplication(name string) (goja.Value, bool, error) {
 	if err != nil {
 		return nil, false, err
 	}
+	//goland:noinspection GoUnhandledErrorResult
 	defer file.Close()
+
 	code, err := io.ReadAll(file)
 	if err != nil {
 		return nil, false, err

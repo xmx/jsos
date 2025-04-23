@@ -8,7 +8,7 @@ import (
 
 // Transform transpiles the input source string and strip types from it.
 // this is done using esbuild
-func Transform(name, code string) ([]byte, error) {
+func Transform(name, code string) (string, error) {
 	opts := api.TransformOptions{
 		Loader:         api.LoaderJS,
 		Sourcefile:     name,
@@ -24,10 +24,10 @@ func Transform(name, code string) ([]byte, error) {
 
 	ret := api.Transform(code, opts)
 	if err := esbuildCheckError(ret); err != nil {
-		return nil, err
+		return "", err
 	}
 
-	return ret.Code, nil
+	return string(ret.Code), nil
 }
 
 func esbuildCheckError(result api.TransformResult) error {
