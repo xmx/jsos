@@ -1,9 +1,21 @@
 package jsvm
 
-import "github.com/dop251/goja"
+import (
+	"io"
+
+	"github.com/dop251/goja"
+)
+
+type Device interface {
+	Stdout() io.Writer
+	Stderr() io.Writer
+	SetStdout(io.Writer)
+	SetStderr(io.Writer)
+}
 
 type Engineer interface {
 	Runtime() *goja.Runtime
+	Device() Device
 	RunJZip(filepath string) (goja.Value, error)
 	RunScript(name, code string) (goja.Value, error)
 	RunProgram(pgm *goja.Program) (goja.Value, error)

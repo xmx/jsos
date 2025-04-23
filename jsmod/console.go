@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io"
 	"reflect"
 	"strconv"
 
@@ -13,55 +12,57 @@ import (
 	"github.com/xmx/jsos/jsvm"
 )
 
-func NewConsole(stdout, stderr io.Writer) jsvm.ModuleRegister {
-	return &writerConsole{stdout: stdout, stderr: stderr}
+func NewConsole() jsvm.ModuleRegister {
+	return &stdConsole{}
 }
 
-type writerConsole struct {
-	stdout io.Writer
-	stderr io.Writer
-	vm     jsvm.Engineer
+type stdConsole struct {
+	eng jsvm.Engineer
 }
 
-func (wc *writerConsole) RegisterModule(vm jsvm.Engineer) error {
-	wc.vm = vm
+func (sc *stdConsole) RegisterModule(eng jsvm.Engineer) error {
+	sc.eng = eng
 	fields := map[string]any{
-		"log":   wc.write,
-		"error": wc.writeStderr,
-		"warn":  wc.writeStderr,
-		"info":  wc.write,
-		"debug": wc.write,
+		"log":   sc.writeStdout,
+		"debug": sc.writeStdout,
+		"info":  sc.writeStdout,
+		"error": sc.writeStderr,
+		"warn":  sc.writeStderr,
 	}
 
-	return vm.Runtime().Set("console", fields)
+	return eng.Runtime().Set("console", fields)
 }
 
-func (wc *writerConsole) write(call goja.FunctionCall) goja.Value {
-	msg, err := wc.format(call)
-	if err == nil {
-		_, err = wc.stdout.Write(msg)
-	}
+func (sc *stdConsole) writeStdout(call goja.FunctionCall) goja.Value {
+	msg, err := sc.format(call)
 	if err != nil {
-		return wc.vm.Runtime().ToValue(err)
+		return sc.eng.Runtime().NewGoError(err)
 	}
+	stdout := sc.eng.Device().Stdout()
+	if _, err = stdout.Write(msg); err != nil {
+		return sc.eng.Runtime().NewGoError(err)
+	}
+
 	return goja.Undefined()
 }
 
-func (wc *writerConsole) writeStderr(call goja.FunctionCall) goja.Value {
-	msg, err := wc.format(call)
-	if err == nil {
-		_, err = wc.stderr.Write(msg)
-	}
+func (sc *stdConsole) writeStderr(call goja.FunctionCall) goja.Value {
+	msg, err := sc.format(call)
 	if err != nil {
-		return wc.vm.Runtime().ToValue(err)
+		return sc.eng.Runtime().NewGoError(err)
 	}
+	stderr := sc.eng.Device().Stdout()
+	if _, err = stderr.Write(msg); err != nil {
+		return sc.eng.Runtime().NewGoError(err)
+	}
+
 	return goja.Undefined()
 }
 
-func (wc *writerConsole) format(call goja.FunctionCall) ([]byte, error) {
+func (sc *stdConsole) format(call goja.FunctionCall) ([]byte, error) {
 	buf := new(bytes.Buffer)
 	for _, arg := range call.Arguments {
-		if err := wc.parse(buf, arg); err != nil {
+		if err := sc.parse(buf, arg); err != nil {
 			return nil, err
 		}
 	}
@@ -70,7 +71,7 @@ func (wc *writerConsole) format(call goja.FunctionCall) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-func (wc *writerConsole) parse(buf *bytes.Buffer, val goja.Value) error {
+func (sc *stdConsole) parse(buf *bytes.Buffer, val goja.Value) error {
 	switch {
 	case goja.IsUndefined(val), goja.IsNull(val):
 		buf.WriteString(val.String())
@@ -99,13 +100,13 @@ func (wc *writerConsole) parse(buf *bytes.Buffer, val goja.Value) error {
 		str := base64.StdEncoding.EncodeToString(bs)
 		buf.WriteString(str)
 	default:
-		return wc.reflectParse(buf, v)
+		return sc.reflectParse(buf, v)
 	}
 
 	return nil
 }
 
-func (*writerConsole) reflectParse(buf *bytes.Buffer, v any) error {
+func (*stdConsole) reflectParse(buf *bytes.Buffer, v any) error {
 	vof := reflect.ValueOf(v)
 	switch vof.Kind() {
 	case reflect.String:

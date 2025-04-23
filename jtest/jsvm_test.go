@@ -10,7 +10,7 @@ import (
 
 func TestJZip(t *testing.T) {
 	mods := []jsvm.ModuleRegister{
-		jsmod.NewConsole(os.Stdout, os.Stderr),
+		jsmod.NewConsole(),
 		jsmod.NewContext(),
 		jsmod.NewExec(),
 		jsmod.NewIO(),
@@ -38,7 +38,7 @@ func TestRun(t *testing.T) {
 	}
 
 	mods := []jsvm.ModuleRegister{
-		jsmod.NewConsole(os.Stdout, os.Stderr),
+		jsmod.NewConsole(),
 		jsmod.NewContext(),
 		jsmod.NewExec(),
 		jsmod.NewIO(),
@@ -54,6 +54,8 @@ func TestRun(t *testing.T) {
 	}
 	defer eng.Kill("结束")
 
+	eng.Device().SetStderr(os.Stderr)
+	eng.Device().SetStdout(os.Stdout)
 	_, err = eng.RunScript(name, string(data))
 	t.Log(err)
 }

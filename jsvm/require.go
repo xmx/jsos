@@ -46,8 +46,8 @@ func (rqu *require) require(call goja.FunctionCall) goja.Value {
 	}
 
 	vm := rqu.eng.Runtime()
-	if !os.IsNotExist(err) {
-		panic(vm.NewGoError(err))
+	if err != nil && !os.IsNotExist(err) {
+		panic(vm.NewTypeError("cannot find module '%s': ", name, err.Error()))
 	}
 
 	panic(vm.NewTypeError("cannot find module '%s'", name))

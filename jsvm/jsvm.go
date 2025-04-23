@@ -11,7 +11,10 @@ import (
 func New(mods ...ModuleRegister) (Engineer, error) {
 	vm := goja.New()
 	vm.SetFieldNameMapper(newFieldNameMapper("json"))
-	eng := &jsEngine{vm: vm}
+	eng := &jsEngine{
+		vm:     vm,
+		device: new(jsDevice),
+	}
 	rqu := &require{
 		eng:     eng,
 		modules: make(map[string]goja.Value, 16),
@@ -27,8 +30,38 @@ func New(mods ...ModuleRegister) (Engineer, error) {
 	return eng, nil
 }
 
+type jsDevice struct {
+	stdout io.Writer
+	stderr io.Writer
+}
+
+func (jd *jsDevice) Stdout() io.Writer {
+	if w := jd.stdout; w != nil {
+		return w
+	}
+
+	return io.Discard
+}
+
+func (jd *jsDevice) Stderr() io.Writer {
+	if w := jd.stderr; w != nil {
+		return w
+	}
+
+	return io.Discard
+}
+
+func (jd *jsDevice) SetStdout(w io.Writer) {
+	jd.stdout = w
+}
+
+func (jd *jsDevice) SetStderr(w io.Writer) {
+	jd.stderr = w
+}
+
 type jsEngine struct {
 	vm      *goja.Runtime
+	device  *jsDevice
 	require *require
 	mutex   sync.Mutex
 	finals  []func() error
@@ -53,6 +86,10 @@ func (jse *jsEngine) RunProgram(pgm *goja.Program) (goja.Value, error) {
 
 func (jse *jsEngine) RegisterModule(name string, module any, override bool) bool {
 	return jse.require.register(name, module, override)
+}
+
+func (jse *jsEngine) Device() Device {
+	return jse.device
 }
 
 func (jse *jsEngine) AddFinalizer(finals ...func() error) {
