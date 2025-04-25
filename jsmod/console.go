@@ -51,7 +51,7 @@ func (sc *stdConsole) writeStderr(call goja.FunctionCall) goja.Value {
 	if err != nil {
 		return sc.eng.Runtime().NewGoError(err)
 	}
-	stderr := sc.eng.Device().Stdout()
+	stderr := sc.eng.Device().Stderr()
 	if _, err = stderr.Write(msg); err != nil {
 		return sc.eng.Runtime().NewGoError(err)
 	}
