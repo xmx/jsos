@@ -5,11 +5,6 @@ import (
 	"github.com/xmx/jsos/multio"
 )
 
-type Device interface {
-	Stdout() multio.Writer
-	Stderr() multio.Writer
-}
-
 type Engineer interface {
 	Runtime() *goja.Runtime
 	RunJZip(filepath string) (goja.Value, error)
