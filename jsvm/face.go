@@ -18,16 +18,16 @@ type Engineer interface {
 	Stderr() multio.Writer
 }
 
-type ModuleRegister interface {
-	RegisterModule(eng Engineer) error
+type ModuleLoader interface {
+	LoadModule(eng Engineer) error
 }
 
-func RegisterModules(eng Engineer, mods []ModuleRegister) error {
+func RegisterModules(eng Engineer, mods []ModuleLoader) error {
 	for _, mod := range mods {
 		if mod == nil {
 			continue
 		}
-		if err := mod.RegisterModule(eng); err != nil {
+		if err := mod.LoadModule(eng); err != nil {
 			return err
 		}
 	}

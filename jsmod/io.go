@@ -6,13 +6,13 @@ import (
 	"github.com/xmx/jsos/jsvm"
 )
 
-func NewIO() jsvm.ModuleRegister {
+func NewIO() jsvm.ModuleLoader {
 	return new(stdIO)
 }
 
 type stdIO struct{}
 
-func (std *stdIO) RegisterModule(eng jsvm.Engineer) error {
+func (std *stdIO) LoadModule(eng jsvm.Engineer) error {
 	vals := map[string]any{
 		"copy":    io.Copy,
 		"copyN":   io.CopyN,

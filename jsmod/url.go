@@ -6,13 +6,13 @@ import (
 	"github.com/xmx/jsos/jsvm"
 )
 
-func NewURL() jsvm.ModuleRegister {
+func NewURL() jsvm.ModuleLoader {
 	return new(stdURL)
 }
 
 type stdURL struct{}
 
-func (sn *stdURL) RegisterModule(eng jsvm.Engineer) error {
+func (sn *stdURL) LoadModule(eng jsvm.Engineer) error {
 	vals := map[string]any{
 		"parse":           url.Parse,
 		"joinPath":        url.JoinPath,

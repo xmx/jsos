@@ -7,13 +7,13 @@ import (
 	"github.com/xmx/jsos/jsvm"
 )
 
-func NewHTTPUtil() jsvm.ModuleRegister {
+func NewHTTPUtil() jsvm.ModuleLoader {
 	return new(stdHTTPUtil)
 }
 
 type stdHTTPUtil struct{}
 
-func (sh *stdHTTPUtil) RegisterModule(eng jsvm.Engineer) error {
+func (sh *stdHTTPUtil) LoadModule(eng jsvm.Engineer) error {
 	vals := map[string]any{
 		"Proxy": sh.newProxy,
 	}
@@ -24,5 +24,17 @@ func (sh *stdHTTPUtil) RegisterModule(eng jsvm.Engineer) error {
 
 func (*stdHTTPUtil) newProxy(_ goja.ConstructorCall, vm *goja.Runtime) *goja.Object {
 	pxy := new(httputil.ReverseProxy)
-	return vm.ToValue(pxy).(*goja.Object)
+	hp := &httputilProxy{pxy: pxy}
+	obj := vm.ToValue(hp).(*goja.Object)
+	_ = obj.Set("setRewrite", hp.setRewrite)
+
+	return obj
+}
+
+type httputilProxy struct {
+	pxy *httputil.ReverseProxy
+}
+
+func (hp *httputilProxy) setRewrite(rewrite func(*httputil.ProxyRequest)) {
+	hp.pxy.Rewrite = rewrite
 }

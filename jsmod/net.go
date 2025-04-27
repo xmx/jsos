@@ -6,13 +6,13 @@ import (
 	"github.com/xmx/jsos/jsvm"
 )
 
-func NewNet() jsvm.ModuleRegister {
+func NewNet() jsvm.ModuleLoader {
 	return new(stdNet)
 }
 
 type stdNet struct{}
 
-func (sn *stdNet) RegisterModule(eng jsvm.Engineer) error {
+func (sn *stdNet) LoadModule(eng jsvm.Engineer) error {
 	vals := map[string]any{
 		"splitHostPort": net.SplitHostPort,
 		"joinHostPort":  net.JoinHostPort,

@@ -8,13 +8,13 @@ import (
 	"github.com/xmx/jsos/jsvm"
 )
 
-func NewHTTP() jsvm.ModuleRegister {
+func NewHTTP() jsvm.ModuleLoader {
 	return new(stdHTTP)
 }
 
 type stdHTTP struct{}
 
-func (sh *stdHTTP) RegisterModule(eng jsvm.Engineer) error {
+func (sh *stdHTTP) LoadModule(eng jsvm.Engineer) error {
 	srv := &httpServer{eng: eng}
 	vals := map[string]any{
 		"statusContinue":           http.StatusContinue,

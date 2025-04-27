@@ -6,13 +6,13 @@ import (
 	"github.com/xmx/jsos/jsvm"
 )
 
-func NewTime() jsvm.ModuleRegister {
+func NewTime() jsvm.ModuleLoader {
 	return new(stdTime)
 }
 
 type stdTime struct{}
 
-func (*stdTime) RegisterModule(eng jsvm.Engineer) error {
+func (*stdTime) LoadModule(eng jsvm.Engineer) error {
 	vals := map[string]any{
 		"nanosecond ":   time.Nanosecond,
 		"microsecond":   time.Microsecond,

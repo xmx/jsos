@@ -6,13 +6,13 @@ import (
 	"github.com/xmx/jsos/jsvm"
 )
 
-func NewOS() jsvm.ModuleRegister {
+func NewOS() jsvm.ModuleLoader {
 	return new(stdOS)
 }
 
 type stdOS struct{}
 
-func (std *stdOS) RegisterModule(eng jsvm.Engineer) error {
+func (std *stdOS) LoadModule(eng jsvm.Engineer) error {
 	vals := map[string]any{
 		"getpid":       os.Getpid,
 		"open":         os.Open,

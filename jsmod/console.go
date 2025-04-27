@@ -13,13 +13,13 @@ import (
 	"github.com/xmx/jsos/jsvm"
 )
 
-func NewConsole() jsvm.ModuleRegister {
+func NewConsole() jsvm.ModuleLoader {
 	return &stdConsole{}
 }
 
 type stdConsole struct{}
 
-func (sc *stdConsole) RegisterModule(eng jsvm.Engineer) error {
+func (sc *stdConsole) LoadModule(eng jsvm.Engineer) error {
 	cm := consoleModule{eng: eng}
 	vals := map[string]any{
 		"log":   cm.stdout,

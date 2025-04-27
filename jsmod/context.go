@@ -6,13 +6,13 @@ import (
 	"github.com/xmx/jsos/jsvm"
 )
 
-func NewContext() jsvm.ModuleRegister {
+func NewContext() jsvm.ModuleLoader {
 	return new(stdContext)
 }
 
 type stdContext struct{}
 
-func (*stdContext) RegisterModule(eng jsvm.Engineer) error {
+func (*stdContext) LoadModule(eng jsvm.Engineer) error {
 	vals := map[string]any{
 		"background":   context.Background,
 		"todo":         context.TODO,
