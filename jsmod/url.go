@@ -10,12 +10,9 @@ func NewURL() jsvm.ModuleRegister {
 	return new(stdURL)
 }
 
-type stdURL struct {
-	eng jsvm.Engineer
-}
+type stdURL struct{}
 
 func (sn *stdURL) RegisterModule(eng jsvm.Engineer) error {
-	sn.eng = eng
 	vals := map[string]any{
 		"parse":           url.Parse,
 		"joinPath":        url.JoinPath,

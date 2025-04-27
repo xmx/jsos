@@ -11,12 +11,9 @@ func NewHTTPUtil() jsvm.ModuleRegister {
 	return new(stdHTTPUtil)
 }
 
-type stdHTTPUtil struct {
-	eng jsvm.Engineer
-}
+type stdHTTPUtil struct{}
 
 func (sh *stdHTTPUtil) RegisterModule(eng jsvm.Engineer) error {
-	sh.eng = eng
 	vals := map[string]any{
 		"Proxy": sh.newProxy,
 	}

@@ -12,12 +12,10 @@ func NewHTTP() jsvm.ModuleRegister {
 	return new(stdHTTP)
 }
 
-type stdHTTP struct {
-	eng jsvm.Engineer
-}
+type stdHTTP struct{}
 
 func (sh *stdHTTP) RegisterModule(eng jsvm.Engineer) error {
-	sh.eng = eng
+	srv := &httpServer{eng: eng}
 	vals := map[string]any{
 		"statusContinue":           http.StatusContinue,
 		"statusSwitchingProtocols": http.StatusSwitchingProtocols,
@@ -87,7 +85,7 @@ func (sh *stdHTTP) RegisterModule(eng jsvm.Engineer) error {
 		"statusNetworkAuthenticationRequired": http.StatusNetworkAuthenticationRequired,
 
 		"ServeMux":           sh.newServeMux,
-		"listenAndServe":     sh.listenAndServe,
+		"listenAndServe":     srv.listenAndServe,
 		"canonicalHeaderKey": http.CanonicalHeaderKey,
 		"Client":             sh.newClient,
 	}
@@ -96,9 +94,13 @@ func (sh *stdHTTP) RegisterModule(eng jsvm.Engineer) error {
 	return nil
 }
 
-func (sh *stdHTTP) listenAndServe(addr string, handler http.Handler) error {
+type httpServer struct {
+	eng jsvm.Engineer
+}
+
+func (hs httpServer) listenAndServe(addr string, handler http.Handler) error {
 	srv := &http.Server{Addr: addr, Handler: handler}
-	sh.eng.AddFinalizer(srv.Close)
+	hs.eng.AddFinalizer(srv.Close)
 	err := srv.ListenAndServe()
 	if err == nil || errors.Is(err, http.ErrServerClosed) {
 		return nil

@@ -10,12 +10,9 @@ func NewNet() jsvm.ModuleRegister {
 	return new(stdNet)
 }
 
-type stdNet struct {
-	eng jsvm.Engineer
-}
+type stdNet struct{}
 
 func (sn *stdNet) RegisterModule(eng jsvm.Engineer) error {
-	sn.eng = eng
 	vals := map[string]any{
 		"splitHostPort": net.SplitHostPort,
 		"joinHostPort":  net.JoinHostPort,
