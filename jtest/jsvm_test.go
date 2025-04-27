@@ -54,8 +54,8 @@ func TestRun(t *testing.T) {
 	}
 	defer eng.Kill("结束")
 
-	eng.Device().Stdout().Attach(os.Stdout)
-	eng.Device().Stderr().Attach(os.Stderr)
+	eng.Stdout().Attach(os.Stdout)
+	eng.Stderr().Attach(os.Stderr)
 	_, err = eng.RunScript(name, string(data))
 	t.Log(err)
 }

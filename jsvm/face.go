@@ -12,13 +12,15 @@ type Device interface {
 
 type Engineer interface {
 	Runtime() *goja.Runtime
-	Device() Device
 	RunJZip(filepath string) (goja.Value, error)
 	RunScript(name, code string) (goja.Value, error)
 	RunProgram(pgm *goja.Program) (goja.Value, error)
 	RegisterModule(name string, module any, override bool) bool
 	AddFinalizer(finals ...func() error)
 	Kill(cause any)
+
+	Stdout() multio.Writer
+	Stderr() multio.Writer
 }
 
 type ModuleRegister interface {

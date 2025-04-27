@@ -9,7 +9,7 @@ import (
 )
 
 type require struct {
-	eng     *jsEngine
+	eng     Engineer
 	modules map[string]goja.Value
 	sources map[string]goja.Value
 	source  *jzip.JZip
@@ -20,15 +20,17 @@ func (rqu *require) register(name string, module any, override bool) bool {
 	if exists && !override {
 		return false
 	}
-	rqu.modules[name] = rqu.eng.vm.ToValue(module)
+	rqu.modules[name] = rqu.eng.Runtime().ToValue(module)
 
 	return true
 }
 
-func (rqu *require) kill() {
+func (rqu *require) close() error {
 	if rqu.source != nil {
-		_ = rqu.source.Close()
+		return rqu.source.Close()
 	}
+
+	return nil
 }
 
 func (rqu *require) require(call goja.FunctionCall) goja.Value {
