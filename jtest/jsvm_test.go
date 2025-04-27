@@ -9,10 +9,9 @@ import (
 )
 
 func TestJZip(t *testing.T) {
-	mods := []jsvm.ModuleRegister{
+	mods := []jsvm.ModuleLoader{
 		jsmod.NewConsole(),
 		jsmod.NewContext(),
-		jsmod.NewExec(),
 		jsmod.NewIO(),
 		jsmod.NewOS(),
 		jsmod.NewRuntime(),
@@ -37,10 +36,9 @@ func TestRun(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	mods := []jsvm.ModuleRegister{
+	mods := []jsvm.ModuleLoader{
 		jsmod.NewConsole(),
 		jsmod.NewContext(),
-		jsmod.NewExec(),
 		jsmod.NewIO(),
 		jsmod.NewOS(),
 		jsmod.NewRuntime(),
