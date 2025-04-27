@@ -10,7 +10,7 @@ import (
 	"github.com/xmx/jsos/multio"
 )
 
-func New(mods ...ModuleRegister) (Engineer, error) {
+func New(mods ...ModuleLoader) (Engineer, error) {
 	vm := goja.New()
 	vm.SetFieldNameMapper(newFieldNameMapper("json"))
 	eng := &jsEngine{
