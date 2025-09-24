@@ -31,6 +31,12 @@ func (dw *dynamicWriter) Attach(w io.Writer) bool {
 	if w == nil {
 		return false
 	}
+	if _, yes := w.(*dynamicWriter); yes {
+		return false
+	}
+	if _, yes := w.(*multiWriter); yes {
+		return false
+	}
 
 	dw.mutex.Lock()
 	defer dw.mutex.Unlock()
