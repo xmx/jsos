@@ -5,12 +5,12 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/dop251/goja"
-	"github.com/dop251/goja/parser"
+	"github.com/grafana/sobek"
+	"github.com/grafana/sobek/parser"
 )
 
-func newFieldNameMapper(tagName string) goja.FieldNameMapper {
-	return &fieldNameMapper{tagName: tagName}
+func newJSONTagName() sobek.FieldNameMapper {
+	return &fieldNameMapper{tagName: "json"}
 }
 
 type fieldNameMapper struct {
