@@ -12,7 +12,7 @@ type Module interface {
 
 type Requirer interface {
 	// Register 注册模块。
-	Register(mods ...Module)
+	Register(mods []Module)
 }
 
 func injectRequire(eng *sobekVM) *sobekRequire {
@@ -33,7 +33,7 @@ type sobekRequire struct {
 	sources map[string]sobek.Value
 }
 
-func (sr *sobekRequire) Register(mods ...Module) {
+func (sr *sobekRequire) Register(mods []Module) {
 	eng := sr.engine
 	for _, mod := range mods {
 		name, value, override := mod.Preload(eng)
